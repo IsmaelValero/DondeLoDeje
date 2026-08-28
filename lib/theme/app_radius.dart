@@ -1,0 +1,14 @@
+import 'package:flutter/material.dart';
+
+/// Radios de borde centralizados.
+abstract final class AppRadius {
+  static const sm = 12.0;
+  static const md = 16.0;
+  static const lg = 20.0;
+  static const xl = 24.0;
+
+  static BorderRadius get smAll => BorderRadius.circular(sm);
+  static BorderRadius get mdAll => BorderRadius.circular(md);
+  static BorderRadius get lgAll => BorderRadius.circular(lg);
+  static BorderRadius get xlAll => BorderRadius.circular(xl);
+}
