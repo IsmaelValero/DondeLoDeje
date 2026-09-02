@@ -22,7 +22,7 @@ void expectOnHome(WidgetTester tester) {
   expect(find.text('Donde'), findsOneWidget);
   expect(find.text('Lo'), findsOneWidget);
   expect(find.text('Deje'), findsOneWidget);
-  expect(find.textContaining('cosas en su sitio'), findsOneWidget);
+  expect(find.textContaining('en su sitio'), findsOneWidget);
   expect(find.text('Recientes'), findsNothing);
   expect(find.byType(NavigationBar), findsNothing);
 }
@@ -50,6 +50,43 @@ Future<void> _seleccionarDropdown(
   await tester.pumpAndSettle();
 }
 
+/// Crea un recuerdo desde el formulario, como haría el usuario.
+Future<void> crearRecuerdo(
+  WidgetTester tester, {
+  required String nombre,
+  required String lugar,
+  String? zona,
+  String? ubicacion,
+}) async {
+  await tester.tap(find.byType(FloatingActionButton));
+  await tester.pumpAndSettle();
+
+  await tester.enterText(find.byKey(const Key('campo_nombre')), nombre);
+  await _seleccionarDropdown(tester, const Key('dropdown_categoria'), lugar);
+
+  if (zona != null) {
+    await _seleccionarDropdown(tester, const Key('dropdown_zona'), zona);
+  }
+  if (ubicacion != null) {
+    await tester.enterText(find.byKey(const Key('campo_ubicacion')), ubicacion);
+  }
+
+  await _tapGuardarRecuerdo(tester);
+}
+
+Future<void> abrirLugar(WidgetTester tester, String nombre) async {
+  final finder = find.descendant(
+    of: find.byType(LugarFrecuenteCard),
+    matching: find.text(nombre),
+  );
+
+  // La rejilla de lugares puede quedar bajo el pliegue en pantallas pequeñas.
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   setUp(() {
     SessionRecuerdos.clear();
@@ -74,8 +111,17 @@ void main() {
     await tester.pumpAndSettle();
 
     expectOnHome(tester);
-    expect(find.textContaining('cosas en su sitio'), findsOneWidget);
     expect(find.text('M'), findsOneWidget);
+  });
+
+  testWidgets('Una instalación nueva arranca sin recuerdos', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const DondeLoDejeApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('0 cosas en su sitio'), findsOneWidget);
+    expect(find.byType(RecuerdoCard), findsNothing);
   });
 
   testWidgets('Perfil en Ajustes muestra el nombre y permite editarlo', (WidgetTester tester) async {
@@ -99,7 +145,6 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('cosas en su sitio'), findsOneWidget);
     expect(find.text('A'), findsOneWidget);
   });
 
@@ -110,8 +155,8 @@ void main() {
     expectOnHome(tester);
     expect(find.text('¿Qué estás buscando?'), findsOneWidget);
     expect(find.text('Casa'), findsOneWidget);
-    expect(find.text('Trastero'), findsOneWidget);
     expect(find.text('Coche'), findsOneWidget);
+    expect(find.text('Trastero'), findsOneWidget);
   });
 
   testWidgets('Desde inicio explora lugar → zona → edita recuerdo', (
@@ -120,23 +165,25 @@ void main() {
     await tester.pumpWidget(const DondeLoDejeApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(LugarFrecuenteCard),
-        matching: find.text('Casa'),
-      ),
+    await crearRecuerdo(
+      tester,
+      nombre: 'Llaves de repuesto',
+      lugar: 'Casa',
+      zona: 'Cocina',
+      ubicacion: 'Cajón de la entrada',
     );
-    await tester.pumpAndSettle();
+
+    await abrirLugar(tester, 'Casa');
 
     expect(
       find.byKey(LugarZonasScreen.screenKeyFor('cat-casa')),
       findsOneWidget,
     );
     expect(find.text('Zonas'), findsOneWidget);
-    expect(find.text('Cuarto papás'), findsOneWidget);
+    expect(find.text('Cuarto Papás'), findsOneWidget);
     expect(find.byKey(const Key('btn_anadir_zona')), findsNothing);
 
-    await tester.tap(find.text('Entrada'));
+    await tester.tap(find.text('Cocina'));
     await tester.pumpAndSettle();
 
     expect(find.byKey(ZonaRecuerdosScreen.screenKey), findsOneWidget);
@@ -175,6 +222,13 @@ void main() {
     await tester.pumpWidget(const DondeLoDejeApp());
     await tester.pumpAndSettle();
 
+    await crearRecuerdo(
+      tester,
+      nombre: 'Cámara',
+      lugar: 'Trastero',
+      ubicacion: 'Estante 3',
+    );
+
     await tester.enterText(find.byKey(const Key('home_search')), 'cámara');
     await tester.pumpAndSettle();
 
@@ -200,16 +254,15 @@ void main() {
     await tester.pumpWidget(const DondeLoDejeApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.byKey(const Key('campo_nombre')), 'Pasaporte');
-    await _seleccionarDropdown(tester, const Key('dropdown_categoria'), 'Trastero');
-    await tester.enterText(find.byKey(const Key('campo_ubicacion')), 'Cajón superior');
-
-    await _tapGuardarRecuerdo(tester);
+    await crearRecuerdo(
+      tester,
+      nombre: 'Pasaporte',
+      lugar: 'Trastero',
+      ubicacion: 'Cajón superior',
+    );
 
     expectOnHome(tester);
+    expect(find.text('1 cosa en su sitio'), findsOneWidget);
   });
 
   testWidgets('Panel de lugares accesible desde menú', (WidgetTester tester) async {
@@ -241,13 +294,14 @@ void main() {
     await tester.pumpWidget(const DondeLoDejeApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(LugarFrecuenteCard),
-        matching: find.text('Trastero'),
-      ),
+    await crearRecuerdo(
+      tester,
+      nombre: 'Cámara',
+      lugar: 'Trastero',
+      ubicacion: 'Estante 3',
     );
-    await tester.pumpAndSettle();
+
+    await abrirLugar(tester, 'Trastero');
 
     await tester.tap(find.text('Sin zona'));
     await tester.pumpAndSettle();
@@ -276,13 +330,14 @@ void main() {
     await tester.pumpWidget(const DondeLoDejeApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(LugarFrecuenteCard),
-        matching: find.text('Trastero'),
-      ),
+    await crearRecuerdo(
+      tester,
+      nombre: 'Cámara',
+      lugar: 'Trastero',
+      ubicacion: 'Estante 3',
     );
-    await tester.pumpAndSettle();
+
+    await abrirLugar(tester, 'Trastero');
 
     await tester.tap(find.text('Sin zona'));
     await tester.pumpAndSettle();
@@ -374,9 +429,9 @@ void main() {
 
     expect(find.text('Despensa'), findsOneWidget);
     expect(find.text('Sin zona'), findsNothing);
-    expect(find.text('Llaves de repuesto'), findsNothing);
 
-    await tester.tap(find.text('Despensa'));
+    // En ajustes la zona no navega a recuerdos, así que el toque no impacta.
+    await tester.tap(find.text('Despensa'), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     expect(find.byKey(ZonaRecuerdosScreen.screenKey), findsNothing);
@@ -391,27 +446,17 @@ void main() {
 
     expectOnHome(tester);
 
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.byKey(const Key('campo_nombre')), 'Mochila de porteo');
-    await _seleccionarDropdown(tester, const Key('dropdown_categoria'), 'Casa');
-    await _seleccionarDropdown(tester, const Key('dropdown_zona'), 'Despensa');
-    await tester.enterText(
-      find.byKey(const Key('campo_ubicacion')),
-      '3er estante de la cómoda',
+    await crearRecuerdo(
+      tester,
+      nombre: 'Mochila de porteo',
+      lugar: 'Casa',
+      zona: 'Despensa',
+      ubicacion: '3er estante de la cómoda',
     );
 
-    await _tapGuardarRecuerdo(tester);
     expectOnHome(tester);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(LugarFrecuenteCard),
-        matching: find.text('Casa'),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await abrirLugar(tester, 'Casa');
 
     await tester.tap(find.text('Despensa'));
     await tester.pumpAndSettle();

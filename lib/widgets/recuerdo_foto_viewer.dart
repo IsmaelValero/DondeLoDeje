@@ -4,6 +4,7 @@ import '../data/models.dart';
 import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
 import 'app_surface_card.dart';
+import 'recuerdo_foto.dart';
 
 /// Visor a pantalla completa de la foto o icono por defecto de un recuerdo.
 class RecuerdoFotoViewer extends StatelessWidget {
@@ -60,18 +61,15 @@ class _Media extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foto = recuerdo.fotoBytes;
-    if (foto != null) {
-      return Image.memory(
-        foto,
-        fit: BoxFit.contain,
-      );
-    }
-
-    return RecuerdoSinFotoBadge(
-      size: 160,
-      iconSize: 80,
-      accentColor: palette.terracotta,
+    return RecuerdoFoto(
+      bytes: recuerdo.fotoBytes,
+      nombre: recuerdo.fotoNombre,
+      fit: BoxFit.contain,
+      placeholder: RecuerdoSinFotoBadge(
+        size: 160,
+        iconSize: 80,
+        accentColor: palette.terracotta,
+      ),
     );
   }
 }

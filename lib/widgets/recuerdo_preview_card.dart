@@ -8,6 +8,7 @@ import '../theme/app_palette.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import 'app_surface_card.dart';
+import 'recuerdo_foto.dart';
 
 /// Previsualización ligera de cómo quedará el recuerdo.
 class RecuerdoPreviewCard extends StatelessWidget {
@@ -18,6 +19,7 @@ class RecuerdoPreviewCard extends StatelessWidget {
     this.zona,
     required this.ubicacionConcreta,
     this.fotoBytes,
+    this.fotoNombre,
   });
 
   final String nombre;
@@ -25,6 +27,7 @@ class RecuerdoPreviewCard extends StatelessWidget {
   final Zona? zona;
   final String ubicacionConcreta;
   final Uint8List? fotoBytes;
+  final String? fotoNombre;
 
   @override
   Widget build(BuildContext context) {
@@ -41,18 +44,14 @@ class RecuerdoPreviewCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (fotoBytes != null)
-                ClipRRect(
-                  borderRadius: AppRadius.smAll,
-                  child: Image.memory(
-                    fotoBytes!,
-                    width: 52,
-                    height: 52,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              else
-                const RecuerdoSinFotoBadge(),
+              RecuerdoFoto(
+                bytes: fotoBytes,
+                nombre: fotoNombre,
+                width: 52,
+                height: 52,
+                borderRadius: AppRadius.smAll,
+                placeholder: const RecuerdoSinFotoBadge(),
+              ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(

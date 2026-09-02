@@ -16,6 +16,12 @@ class AppThemeSession extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Repuebla la preferencia con lo guardado en el dispositivo.
+  void restaurar(ThemeMode mode) {
+    _mode = mode;
+    notifyListeners();
+  }
+
   void reset() {
     _mode = ThemeMode.light;
     notifyListeners();

@@ -35,6 +35,13 @@ class UserSession extends ChangeNotifier {
 
   void setDisplayName(String name) => completeOnboarding(name);
 
+  /// Repuebla el perfil con lo guardado en el dispositivo.
+  void restaurar(String? name) {
+    final trimmed = name?.trim();
+    _displayName = (trimmed == null || trimmed.isEmpty) ? null : trimmed;
+    notifyListeners();
+  }
+
   void reset() {
     _displayName = null;
     notifyListeners();

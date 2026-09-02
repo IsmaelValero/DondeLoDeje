@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../data/catalogo_session.dart';
+import '../data/foto_store.dart';
 import '../data/opcion_catalogo.dart';
 import '../data/recuerdos_query.dart';
 import '../data/models.dart';
@@ -40,6 +41,8 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
   late String _categoriaId;
   String _zonaId = sinZonaId;
   Uint8List? _fotoBytes;
+  String? _fotoNombre;
+  bool _fotoCambiada = false;
   Recuerdo? _recuerdoOriginal;
 
   @override
@@ -54,6 +57,7 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
             _catalogo.categoriaDefault;
         _categoriaId = categoria.id;
         _fotoBytes = _recuerdoOriginal!.fotoBytes;
+        _fotoNombre = _recuerdoOriginal!.fotoNombre;
         _nombreController.text = _recuerdoOriginal!.titulo;
         _ubicacionController.text = RecuerdoResolver.ubicacionConcretaForEdit(
           _recuerdoOriginal!,
@@ -98,25 +102,42 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
     });
   }
 
-  void _guardar() {
+  /// Escribe la foto nueva en el dispositivo y borra la anterior si se cambió.
+  Future<String?> _persistirFoto() async {
+    final anterior = _recuerdoOriginal?.fotoNombre;
+    if (!_fotoCambiada) return anterior;
+
+    if (anterior != null) {
+      await FotoStore.borrar(anterior);
+    }
+
+    final bytes = _fotoBytes;
+    if (bytes == null) return null;
+    return FotoStore.guardar(bytes);
+  }
+
+  Future<void> _guardar() async {
     FocusScope.of(context).unfocus();
 
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
 
-    if (widget.isEditing) {
-      final original = _recuerdoOriginal;
-      if (original == null) return;
+    final original = _recuerdoOriginal;
+    if (widget.isEditing && original == null) return;
 
+    final fotoNombre = await _persistirFoto();
+    if (!mounted) return;
+
+    if (widget.isEditing) {
       SessionRecuerdos.upsert(
         RecuerdoFactory.fromFormUpdate(
-          original: original,
+          original: original!,
           nombre: _nombreController.text,
           categoria: _categoriaSeleccionada,
           zona: _zonaSeleccionada,
           ubicacionConcreta: _ubicacionController.text,
-          fotoBytes: _fotoBytes,
+          fotoNombre: fotoNombre,
         ),
       );
     } else {
@@ -126,7 +147,7 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
           categoria: _categoriaSeleccionada,
           zona: _zonaSeleccionada,
           ubicacionConcreta: _ubicacionController.text,
-          fotoBytes: _fotoBytes,
+          fotoNombre: fotoNombre,
         ),
       );
     }
@@ -171,6 +192,7 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
                     zona: _zonaSeleccionada,
                     ubicacionConcreta: _ubicacionController.text,
                     fotoBytes: _fotoBytes,
+                    fotoNombre: _fotoNombre,
                   ),
                   const SizedBox(height: AppSpacing.sectionGap),
                   RecuerdoFieldLabel(
@@ -256,7 +278,12 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
                   const SizedBox(height: AppSpacing.sm),
                   FotoRecuerdoPicker(
                     fotoBytes: _fotoBytes,
-                    onChanged: (bytes) => setState(() => _fotoBytes = bytes),
+                    fotoNombre: _fotoNombre,
+                    onChanged: (bytes) => setState(() {
+                      _fotoBytes = bytes;
+                      _fotoCambiada = true;
+                      if (bytes == null) _fotoNombre = null;
+                    }),
                   ),
                   const SizedBox(height: AppSpacing.sectionGap),
                   FilledButton(

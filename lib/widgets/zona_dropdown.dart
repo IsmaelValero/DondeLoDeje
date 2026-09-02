@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../data/catalogo_session.dart';
 import '../data/zona.dart';
 import '../theme/app_palette.dart';
-import '../theme/app_spacing.dart';
 
 /// Valor vacío para omitir la zona en formularios.
 const sinZonaId = '';

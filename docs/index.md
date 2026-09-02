@@ -30,7 +30,8 @@ DondeLoDeje permite al usuario introducir voluntariamente información para crea
 - Lugares.
 - Zonas dentro de los lugares.
 - Ubicaciones concretas descritas en texto libre.
-- Fotografías asociadas a los recuerdos.
+- Fotografías asociadas a los recuerdos, hechas con la cámara o elegidas de la galería.
+- Preferencias de uso de la aplicación, como el tema claro u oscuro.
 - Cualquier otra información que el usuario decida introducir voluntariamente.
 
 DondeLoDeje **no solicita ni recopila** direcciones de correo electrónico, contraseñas, números de teléfono, datos de pago, contactos, ubicación GPS del dispositivo ni identificadores publicitarios.
@@ -55,36 +56,40 @@ DondeLoDeje **no utiliza esta información para publicidad personalizada, elabor
 Conforme al Reglamento (UE) 2016/679 (RGPD), el tratamiento de la información se basa en:
 
 - **La ejecución de la relación con el usuario** (artículo 6.1.b RGPD): tratar la información introducida es imprescindible para prestar las funciones que el usuario solicita al usar la aplicación.
-- **El consentimiento del usuario** (artículo 6.1.a RGPD): el usuario decide voluntariamente qué información introduce y si concede acceso a sus fotografías. Puede retirar ese consentimiento en cualquier momento eliminando la información o revocando los permisos desde los ajustes de Android.
+- **El consentimiento del usuario** (artículo 6.1.a RGPD): el usuario decide voluntariamente qué información introduce y qué fotografías añade, seleccionándolas una a una. Puede retirar ese consentimiento en cualquier momento eliminando la información desde la aplicación o borrando los datos de la aplicación desde los ajustes de Android.
 
 ## 5. Almacenamiento y conservación
 
-La información creada por el usuario se almacena **localmente en el dispositivo** para permitir el funcionamiento de la aplicación.
+La información creada por el usuario se almacena **localmente en el dispositivo** para permitir el funcionamiento de la aplicación, de modo que siga disponible al cerrar y volver a abrir la aplicación.
+
+En concreto, los textos (nombre, recuerdos, lugares y zonas) se guardan en el área de preferencias privada de la aplicación, y las fotografías como archivos dentro del directorio privado de la aplicación. Ambos espacios son accesibles únicamente por DondeLoDeje y se eliminan al desinstalarla.
 
 DondeLoDeje **no dispone de servidores propios** y no envía los recuerdos, lugares, zonas, fotografías ni el nombre del usuario a ningún servidor del desarrollador.
 
 La información se conserva en el dispositivo hasta que el usuario la elimina desde la propia aplicación, borra los datos de la aplicación desde los ajustes de Android o desinstala la aplicación.
 
-## 6. Fotografías y acceso a la galería
+## 6. Fotografías, galería y cámara
 
-El usuario puede añadir fotografías a sus recuerdos seleccionándolas desde la galería de su dispositivo mediante el selector de fotos del sistema Android.
+El usuario puede añadir una fotografía a cada recuerdo de dos formas: haciéndola en ese momento o eligiéndola de la galería de su dispositivo.
 
-- La aplicación accede **únicamente a las imágenes que el usuario selecciona expresamente**. No explora ni indexa el resto de la galería.
-- Las fotografías seleccionadas se utilizan solo para mostrarlas junto al recuerdo correspondiente y se mantienen en el dispositivo.
+- Al **hacer una foto**, DondeLoDeje abre la aplicación de cámara del propio sistema Android, que realiza la captura y devuelve únicamente la imagen resultante. La aplicación no controla la cámara ni accede a ella de forma continua, y no puede capturar imágenes sin una acción expresa del usuario.
+- Al **elegir de la galería**, se utiliza el selector de fotos del sistema Android. La aplicación accede **únicamente a las imágenes que el usuario selecciona expresamente** y no explora ni indexa el resto de la galería.
+- Las fotografías se guardan **en el almacenamiento privado de la aplicación dentro del dispositivo** y se utilizan solo para mostrarlas junto al recuerdo correspondiente.
 - DondeLoDeje **no sube las fotografías a Internet** ni las comparte con terceros.
 - DondeLoDeje **no utiliza las fotografías para publicidad, reconocimiento facial, biometría, elaboración de perfiles** ni ningún fin distinto de mostrarlas dentro de la aplicación.
 
-En la versión actual, la aplicación **no accede a la cámara del dispositivo**. Si una versión futura incorporase la captura directa de fotografías, se solicitaría el permiso de cámara de Android en el momento de usar esa función y esta política se actualizaría en consecuencia.
-
 ## 7. Permisos de Android
 
-DondeLoDeje solicita el mínimo de permisos necesarios para funcionar:
+DondeLoDeje está diseñada para funcionar **sin solicitar permisos del sistema**: la versión publicada en Google Play no declara ningún permiso de Android.
 
-- **Acceso a fotografías seleccionadas por el usuario**, gestionado a través del selector de fotos del sistema Android, para permitir asociar imágenes a los recuerdos. En versiones antiguas de Android puede requerirse el permiso de lectura de almacenamiento para la misma finalidad.
+Esto es posible porque las dos funciones que normalmente los requerirían se delegan por completo en el sistema operativo:
 
-La aplicación **no solicita** permisos de ubicación, contactos, micrófono, cámara, SMS, llamadas ni acceso a la lista de aplicaciones instaladas.
+- **Hacer una foto**: se abre la aplicación de cámara del sistema, que realiza la captura y devuelve únicamente la imagen resultante. DondeLoDeje **no declara ni solicita el permiso de cámara**.
+- **Elegir una foto**: se abre el selector de fotos del sistema, que entrega únicamente la imagen seleccionada. DondeLoDeje **no declara ni solicita permisos de acceso al almacenamiento ni a la galería**.
 
-El usuario puede revisar y revocar los permisos concedidos en cualquier momento desde **Ajustes → Aplicaciones → DondeLoDeje → Permisos** en su dispositivo Android.
+La aplicación **tampoco solicita** permisos de ubicación, contactos, micrófono, SMS, llamadas ni acceso a la lista de aplicaciones instaladas.
+
+Además, la versión publicada **no declara el permiso de acceso a Internet**, por lo que la aplicación no puede enviar información fuera del dispositivo.
 
 ## 8. Compartición de información y terceros
 
@@ -113,9 +118,9 @@ Dado que la información permanece en el dispositivo del usuario y el desarrolla
 
 El usuario puede eliminar en cualquier momento la información almacenada:
 
-- Borrando recuerdos, lugares o zonas desde las funciones disponibles en la aplicación.
-- Borrando los datos de la aplicación desde **Ajustes → Aplicaciones → DondeLoDeje → Almacenamiento → Borrar datos**.
-- Desinstalando la aplicación del dispositivo.
+- Editando el contenido de sus recuerdos, o borrando lugares y zonas, desde las funciones disponibles en la aplicación.
+- Borrando de una vez toda la información de la aplicación desde **Ajustes → Aplicaciones → DondeLoDeje → Almacenamiento → Borrar datos**.
+- Desinstalando la aplicación del dispositivo, lo que elimina también las fotografías guardadas por la aplicación.
 
 Las copias de seguridad y restauraciones del dispositivo pueden estar sujetas a la configuración de Android y a los servicios de copia de seguridad que el usuario tenga activados.
 

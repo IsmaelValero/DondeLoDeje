@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/sample_data.dart';
+import '../data/mas_options.dart';
 import '../data/user_session.dart';
 import '../navigation/app_routes.dart';
 import '../theme/app_spacing.dart';
@@ -17,7 +17,7 @@ class MasScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = SampleData.masOptions;
+    final options = masOptions;
 
     final body = ListView(
       padding: EdgeInsets.fromLTRB(

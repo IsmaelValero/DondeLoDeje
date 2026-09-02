@@ -18,24 +18,24 @@ class CatalogoSession extends ChangeNotifier {
       colorKey: CatalogColorKeys.green,
     ),
     OpcionCatalogo(
-      id: 'cat-trastero',
-      nombre: 'Trastero',
-      iconKey: 'box',
-      colorKey: CatalogColorKeys.petrol,
-    ),
-    OpcionCatalogo(
       id: 'cat-coche',
       nombre: 'Coche',
       iconKey: 'car',
       colorKey: CatalogColorKeys.terracotta,
     ),
+    OpcionCatalogo(
+      id: 'cat-trastero',
+      nombre: 'Trastero',
+      iconKey: 'box',
+      colorKey: CatalogColorKeys.petrol,
+    ),
   ];
 
   static const _zonasIniciales = [
-    Zona(id: 'zona-casa-papas', categoriaId: 'cat-casa', nombre: 'Cuarto papás'),
-    Zona(id: 'zona-casa-dormitorio', categoriaId: 'cat-casa', nombre: 'Dormitorio'),
-    Zona(id: 'zona-casa-entrada', categoriaId: 'cat-casa', nombre: 'Entrada'),
-    Zona(id: 'zona-casa-garaje', categoriaId: 'cat-casa', nombre: 'Garaje'),
+    Zona(id: 'zona-casa-cocina', categoriaId: 'cat-casa', nombre: 'Cocina'),
+    Zona(id: 'zona-casa-salon', categoriaId: 'cat-casa', nombre: 'Salón'),
+    Zona(id: 'zona-casa-bano', categoriaId: 'cat-casa', nombre: 'Baño'),
+    Zona(id: 'zona-casa-papas', categoriaId: 'cat-casa', nombre: 'Cuarto Papás'),
   ];
 
   List<OpcionCatalogo> _categorias = List.of(_categoriasIniciales);
@@ -114,6 +114,16 @@ class CatalogoSession extends ChangeNotifier {
     final removed = _zonas.length < lengthBefore;
     if (removed) notifyListeners();
     return removed;
+  }
+
+  /// Repuebla el catálogo con lo guardado en el dispositivo.
+  void restaurar({
+    required List<OpcionCatalogo> categorias,
+    required List<Zona> zonas,
+  }) {
+    _categorias = List.of(categorias);
+    _zonas = List.of(zonas);
+    notifyListeners();
   }
 
   /// Solo para tests.

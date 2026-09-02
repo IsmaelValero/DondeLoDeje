@@ -7,6 +7,7 @@ import '../theme/app_palette.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import 'app_surface_card.dart';
+import 'recuerdo_foto.dart';
 
 /// Selector opcional de fotografía para un recuerdo.
 class FotoRecuerdoPicker extends StatelessWidget {
@@ -14,22 +15,31 @@ class FotoRecuerdoPicker extends StatelessWidget {
     super.key,
     required this.fotoBytes,
     required this.onChanged,
+    this.fotoNombre,
   });
 
   final Uint8List? fotoBytes;
+  final String? fotoNombre;
   final ValueChanged<Uint8List?> onChanged;
 
+  bool get _tieneFoto => fotoBytes != null || fotoNombre != null;
+
   Future<void> _elegirFoto(BuildContext context) async {
+    final origen = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => const _OrigenFotoSheet(),
+    );
+    if (origen == null) return;
+
     final picker = ImagePicker();
     final imagen = await picker.pickImage(
-      source: ImageSource.gallery,
+      source: origen,
       maxWidth: 1600,
       imageQuality: 85,
     );
     if (imagen == null) return;
 
-    final bytes = await imagen.readAsBytes();
-    onChanged(bytes);
+    onChanged(await imagen.readAsBytes());
   }
 
   @override
@@ -39,7 +49,7 @@ class FotoRecuerdoPicker extends StatelessWidget {
     return AppSurfaceCard(
       onTap: () => _elegirFoto(context),
       padding: const EdgeInsets.all(AppSpacing.lg),
-      child: fotoBytes == null
+      child: !_tieneFoto
           ? Row(
               children: [
                 Container(
@@ -68,7 +78,7 @@ class FotoRecuerdoPicker extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        'Opcional — ayuda a reconocer el objeto',
+                        'Opcional — hazla ahora o elígela de la galería',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: palette.textSecondary,
                             ),
@@ -81,14 +91,13 @@ class FotoRecuerdoPicker extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ClipRRect(
-                  borderRadius: AppRadius.mdAll,
-                  child: AspectRatio(
-                    aspectRatio: 16 / 10,
-                    child: Image.memory(
-                      fotoBytes!,
-                      fit: BoxFit.cover,
-                    ),
+                AspectRatio(
+                  aspectRatio: 16 / 10,
+                  child: RecuerdoFoto(
+                    bytes: fotoBytes,
+                    nombre: fotoNombre,
+                    borderRadius: AppRadius.mdAll,
+                    placeholder: const SizedBox.shrink(),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -108,6 +117,37 @@ class FotoRecuerdoPicker extends StatelessWidget {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _OrigenFotoSheet extends StatelessWidget {
+  const _OrigenFotoSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: AppSpacing.sm),
+          ListTile(
+            key: const Key('btn_foto_camara'),
+            leading: Icon(Icons.photo_camera_outlined, color: palette.petrol),
+            title: const Text('Hacer una foto'),
+            onTap: () => Navigator.of(context).pop(ImageSource.camera),
+          ),
+          ListTile(
+            key: const Key('btn_foto_galeria'),
+            leading: Icon(Icons.photo_library_outlined, color: palette.petrol),
+            title: const Text('Elegir de la galería'),
+            onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+        ],
+      ),
     );
   }
 }

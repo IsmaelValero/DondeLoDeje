@@ -8,6 +8,7 @@ import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../utils/recuerdo_resolver.dart';
 import 'app_surface_card.dart';
+import 'recuerdo_foto.dart';
 import 'recuerdo_foto_viewer.dart';
 
 class RecuerdoCard extends StatelessWidget {
@@ -58,17 +59,14 @@ class RecuerdoCard extends StatelessWidget {
             key: const Key('recuerdo_card_imagen'),
             behavior: HitTestBehavior.opaque,
             onTap: () => _openImagen(context),
-            child: recuerdo.fotoBytes != null
-                ? ClipRRect(
-                    borderRadius: AppRadius.smAll,
-                    child: Image.memory(
-                      recuerdo.fotoBytes!,
-                      width: 52,
-                      height: 52,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const RecuerdoSinFotoBadge(),
+            child: RecuerdoFoto(
+              bytes: recuerdo.fotoBytes,
+              nombre: recuerdo.fotoNombre,
+              width: 52,
+              height: 52,
+              borderRadius: AppRadius.smAll,
+              placeholder: const RecuerdoSinFotoBadge(),
+            ),
           ),
           const SizedBox(width: AppSpacing.md + 2),
           Expanded(

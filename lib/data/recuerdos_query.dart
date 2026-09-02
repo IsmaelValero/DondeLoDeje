@@ -1,38 +1,12 @@
 import 'catalogo_session.dart';
 import 'opcion_catalogo.dart';
-import 'sample_data.dart';
 import 'session_recuerdos.dart';
 import 'models.dart';
 
 /// Consultas unificadas de recuerdos por lugar, zona y categoría.
 abstract final class RecuerdosQuery {
-  static String? sampleLugarIdForCategoria(String categoriaId) {
-    return switch (categoriaId) {
-      'cat-casa' || 'lugar-casa' => 'casa',
-      'cat-trastero' || 'lugar-trastero' => 'trastero',
-      'cat-coche' || 'lugar-coche' => 'coche',
-      _ => null,
-    };
-  }
-
-  static String? catalogoIdForSampleLugar(String sampleLugarId) {
-    return switch (sampleLugarId) {
-      'casa' => 'cat-casa',
-      'trastero' => 'cat-trastero',
-      'coche' => 'cat-coche',
-      _ => null,
-    };
-  }
-
   static OpcionCatalogo? resolveCategoria(String id) {
-    final direct = CatalogoSession.instance.categoriaById(id);
-    if (direct != null) return direct;
-
-    final mapped = catalogoIdForSampleLugar(id);
-    if (mapped != null) {
-      return CatalogoSession.instance.categoriaById(mapped);
-    }
-    return null;
+    return CatalogoSession.instance.categoriaById(id);
   }
 
   static Recuerdo? findById(String id) => SessionRecuerdos.findById(id);
@@ -43,45 +17,9 @@ abstract final class RecuerdosQuery {
   }
 
   static List<Recuerdo> forCategoria(String id) {
-    final opcion = resolveCategoria(id);
-    final categoriaId = opcion?.id ?? id;
-    final sampleId = sampleLugarIdForCategoria(categoriaId);
-
-    final seen = <String>{};
-    final result = <Recuerdo>[];
-
-    void add(Recuerdo recuerdo) {
-      if (seen.add(recuerdo.id)) {
-        result.add(recuerdo);
-      }
-    }
-
-    for (final recuerdo in SessionRecuerdos.items) {
-      if (_perteneceACategoria(recuerdo, categoriaId)) {
-        add(recuerdo);
-      }
-    }
-
-    if (sampleId != null) {
-      for (final recuerdo in SampleData.recuerdosPorLugar[sampleId] ?? const []) {
-        final effective = SessionRecuerdos.overrideFor(recuerdo.id) ?? recuerdo;
-        if (SessionRecuerdos.hasOverride(recuerdo.id)) {
-          if (_perteneceACategoria(effective, categoriaId)) {
-            add(effective);
-          }
-        } else {
-          add(effective);
-        }
-      }
-    }
-
-    for (final recuerdo in SessionRecuerdos.overrides) {
-      if (_perteneceACategoria(recuerdo, categoriaId)) {
-        add(recuerdo);
-      }
-    }
-
-    return result;
+    return SessionRecuerdos.items
+        .where((recuerdo) => _perteneceACategoria(recuerdo, id))
+        .toList();
   }
 
   static List<Recuerdo> forZona(String zonaId) {

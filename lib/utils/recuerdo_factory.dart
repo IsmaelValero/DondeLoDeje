@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import '../data/opcion_catalogo.dart';
 import '../data/models.dart';
 import '../data/zona.dart';
@@ -16,17 +14,17 @@ abstract final class RecuerdoFactory {
     required OpcionCatalogo categoria,
     Zona? zona,
     String? ubicacionConcreta,
-    Uint8List? fotoBytes,
+    String? fotoNombre,
   }) {
     return Recuerdo(
-      id: 'session-${DateTime.now().millisecondsSinceEpoch}',
+      id: 'rec-${DateTime.now().microsecondsSinceEpoch}',
       emoji: CatalogIcons.emojiFor(categoria.iconKey),
       titulo: nombre.trim(),
       ubicacion: buildUbicacion(ubicacionConcreta: ubicacionConcreta),
       categoriaId: categoria.id,
       lugarCatalogoId: categoria.id,
       zonaId: zona?.id,
-      fotoBytes: fotoBytes,
+      fotoNombre: fotoNombre,
     );
   }
 
@@ -36,9 +34,9 @@ abstract final class RecuerdoFactory {
     required OpcionCatalogo categoria,
     Zona? zona,
     String? ubicacionConcreta,
-    Uint8List? fotoBytes,
+    String? fotoNombre,
   }) {
-    return original.copyWith(
+    final actualizado = original.copyWith(
       emoji: CatalogIcons.emojiFor(categoria.iconKey),
       titulo: nombre.trim(),
       ubicacion: buildUbicacion(ubicacionConcreta: ubicacionConcreta),
@@ -46,7 +44,11 @@ abstract final class RecuerdoFactory {
       lugarCatalogoId: categoria.id,
       zonaId: zona?.id,
       clearZonaId: zona == null,
-      fotoBytes: fotoBytes,
+      clearFoto: true,
     );
+
+    return fotoNombre == null
+        ? actualizado
+        : actualizado.copyWith(fotoNombre: fotoNombre);
   }
 }
