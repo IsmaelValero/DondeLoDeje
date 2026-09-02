@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/catalogo_session.dart';
 import '../data/recuerdos_query.dart';
+import '../data/session_recuerdos.dart';
 import '../navigation/app_routes.dart';
 import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
@@ -76,7 +77,7 @@ class _LugarZonasScreenState extends State<LugarZonasScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: _catalogo,
+      listenable: Listenable.merge([_catalogo, SessionRecuerdos.cambios]),
       builder: (context, _) {
         final lugar = RecuerdosQuery.resolveCategoria(widget.categoriaId);
         final zonas = _catalogo.zonasForCategoria(widget.categoriaId);

@@ -5,6 +5,7 @@ import '../data/user_session.dart';
 import '../data/models.dart';
 import '../data/opcion_catalogo.dart';
 import '../data/recuerdos_query.dart';
+import '../data/session_recuerdos.dart';
 import '../navigation/app_routes.dart';
 import '../theme/app_palette.dart';
 import '../theme/app_spacing.dart';
@@ -159,6 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
       listenable: Listenable.merge([
         CatalogoSession.instance,
         UserSession.instance,
+        SessionRecuerdos.cambios,
       ]),
       builder: (context, _) {
         final categorias = CatalogoSession.instance.categorias;

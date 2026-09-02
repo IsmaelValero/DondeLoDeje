@@ -137,6 +137,27 @@ void main() {
     expect(SessionRecuerdos.items.first.ubicacion, 'Caja azul');
   });
 
+  test('un recuerdo eliminado no reaparece al reabrir', () async {
+    final almacen = AlmacenMemoria();
+    await Persistencia.init(almacen: almacen);
+
+    SessionRecuerdos.add(
+      RecuerdoFactory.fromForm(
+        nombre: 'Pasaporte',
+        categoria: CatalogoSession.instance.categoriaDefault,
+      ),
+    );
+    await Persistencia.guardarAhora();
+
+    SessionRecuerdos.remove(SessionRecuerdos.items.first.id);
+    await Persistencia.guardarAhora();
+
+    simularCierre();
+    await Persistencia.init(almacen: almacen);
+
+    expect(SessionRecuerdos.items, isEmpty);
+  });
+
   test('una instalación nueva no trae datos de ejemplo', () async {
     await Persistencia.init(almacen: AlmacenMemoria());
 

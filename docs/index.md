@@ -118,7 +118,7 @@ Dado que la información permanece en el dispositivo del usuario y el desarrolla
 
 El usuario puede eliminar en cualquier momento la información almacenada:
 
-- Editando el contenido de sus recuerdos, o borrando lugares y zonas, desde las funciones disponibles en la aplicación.
+- Borrando recuerdos, lugares o zonas desde las funciones disponibles en la aplicación. Al eliminar un recuerdo se borra también del dispositivo la fotografía asociada.
 - Borrando de una vez toda la información de la aplicación desde **Ajustes → Aplicaciones → DondeLoDeje → Almacenamiento → Borrar datos**.
 - Desinstalando la aplicación del dispositivo, lo que elimina también las fotografías guardadas por la aplicación.
 

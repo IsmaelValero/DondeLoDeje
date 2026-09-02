@@ -116,6 +116,41 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
     return FotoStore.guardar(bytes);
   }
 
+  Future<void> _confirmarEliminar() async {
+    final original = _recuerdoOriginal;
+    if (original == null) return;
+
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar recuerdo'),
+        content: Text('¿Eliminar “${original.titulo}”?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            key: const Key('btn_confirmar_eliminar_recuerdo'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true) return;
+
+    final fotoNombre = original.fotoNombre;
+    if (fotoNombre != null) {
+      await FotoStore.borrar(fotoNombre);
+    }
+    SessionRecuerdos.remove(original.id);
+
+    if (!mounted) return;
+    Navigator.of(context).pop(true);
+  }
+
   Future<void> _guardar() async {
     FocusScope.of(context).unfocus();
 
@@ -302,6 +337,18 @@ class _CrearRecuerdoScreenState extends State<CrearRecuerdoScreen> {
                       ),
                     ),
                   ),
+                  if (widget.isEditing) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    TextButton.icon(
+                      key: const Key('btn_eliminar_recuerdo'),
+                      onPressed: _confirmarEliminar,
+                      icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                      label: const Text('Eliminar recuerdo'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: palette.terracotta,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

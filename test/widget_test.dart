@@ -39,6 +39,18 @@ Future<void> _tapGuardarRecuerdo(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+Future<void> _tapEliminarRecuerdo(WidgetTester tester) async {
+  final finder = find.byKey(const Key('btn_eliminar_recuerdo'));
+  await tester.scrollUntilVisible(
+    finder,
+    120,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 Future<void> _seleccionarDropdown(
   WidgetTester tester,
   Key key,
@@ -352,6 +364,90 @@ void main() {
 
     expect(find.byKey(const Key('recuerdo_foto_viewer')), findsOneWidget);
     expect(find.text('Cámara'), findsWidgets);
+  });
+
+  testWidgets('Eliminar un recuerdo lo quita de la aplicación', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const DondeLoDejeApp());
+    await tester.pumpAndSettle();
+
+    await crearRecuerdo(
+      tester,
+      nombre: 'Pasaporte',
+      lugar: 'Casa',
+      zona: 'Cocina',
+      ubicacion: 'Cajón de la entrada',
+    );
+
+    expect(find.text('1 cosa en su sitio'), findsOneWidget);
+
+    await abrirLugar(tester, 'Casa');
+    await tester.tap(find.text('Cocina'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('recuerdo_card_contenido')),
+        matching: find.text('Pasaporte'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await _tapEliminarRecuerdo(tester);
+
+    // Pide confirmación antes de borrar nada.
+    final confirmar = find.byKey(const Key('btn_confirmar_eliminar_recuerdo'));
+    expect(confirmar, findsOneWidget);
+    expect(SessionRecuerdos.items, hasLength(1));
+
+    await tester.tap(confirmar);
+    await tester.pumpAndSettle();
+
+    expect(SessionRecuerdos.items, isEmpty);
+    expect(find.text('Pasaporte'), findsNothing);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    expectOnHome(tester);
+    expect(find.text('0 cosas en su sitio'), findsOneWidget);
+  });
+
+  testWidgets('Cancelar el borrado deja el recuerdo intacto', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const DondeLoDejeApp());
+    await tester.pumpAndSettle();
+
+    await crearRecuerdo(
+      tester,
+      nombre: 'Pasaporte',
+      lugar: 'Trastero',
+      ubicacion: 'Cajón superior',
+    );
+
+    await abrirLugar(tester, 'Trastero');
+    await tester.tap(find.text('Sin zona'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('recuerdo_card_contenido')),
+        matching: find.text('Pasaporte'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await _tapEliminarRecuerdo(tester);
+
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+
+    expect(SessionRecuerdos.items, hasLength(1));
+    expect(find.text('Editar recuerdo'), findsOneWidget);
   });
 
   testWidgets('Pagina categorías cuando hay más de ocho', (WidgetTester tester) async {
