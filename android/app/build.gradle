@@ -5,6 +5,13 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Datos del almacén de claves. Nunca se versiona: ver .gitignore.
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "com.dondelodeje.dondelodeje"
     compileSdk = flutter.compileSdkVersion
@@ -30,11 +37,27 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            release {
+                keyAlias = keystoreProperties["keyAlias"]
+                keyPassword = keystoreProperties["keyPassword"]
+                storeFile = file(keystoreProperties["storeFile"])
+                storePassword = keystoreProperties["storePassword"]
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.release
+            } else {
+                // Sin almacén de claves solo puede firmarse en depuración, y Google
+                // Play rechaza ese tipo de firma. Se avisa para no descubrirlo al subir.
+                logger.warn("AVISO: falta android/key.properties. La release se firmará con la clave de depuración y Google Play la rechazará.")
+                signingConfig = signingConfigs.debug
+            }
         }
     }
 }
