@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_palette.dart';
-import '../theme/app_radius.dart';
 import '../theme/app_tokens.dart';
 
 class AppSurfaceCard extends StatelessWidget {
@@ -11,18 +10,21 @@ class AppSurfaceCard extends StatelessWidget {
     this.onTap,
     this.padding,
     this.showShadow = true,
+    this.accentColor,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsets? padding;
   final bool showShadow;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
     final palette = context.palette;
     final radius = BorderRadius.circular(tokens.cardRadius);
+    final accent = accentColor ?? palette.petrol;
 
     final content = Padding(
       padding: padding ?? tokens.cardPadding,
@@ -30,9 +32,12 @@ class AppSurfaceCard extends StatelessWidget {
     );
 
     final decoration = BoxDecoration(
-      color: palette.surface,
+      color: palette.card,
       borderRadius: radius,
-      border: Border.all(color: palette.border, width: 0.5),
+      border: Border.all(
+        color: accent.withValues(alpha: palette.cardBorderAlpha),
+        width: 1,
+      ),
       boxShadow: showShadow ? palette.cardShadows : null,
     );
 
@@ -48,6 +53,8 @@ class AppSurfaceCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: radius,
+        splashColor: accent.withValues(alpha: 0.08),
+        highlightColor: accent.withValues(alpha: 0.04),
         child: Ink(
           decoration: decoration,
           child: content,
@@ -57,31 +64,37 @@ class AppSurfaceCard extends StatelessWidget {
   }
 }
 
-class EmojiBadge extends StatelessWidget {
-  const EmojiBadge({
+class RecuerdoSinFotoBadge extends StatelessWidget {
+  const RecuerdoSinFotoBadge({
     super.key,
-    required this.emoji,
-    this.size = 48,
-    this.fontSize = 24,
+    this.size = 52,
+    this.iconSize = 26,
+    this.accentColor,
   });
 
-  final String emoji;
   final double size;
-  final double fontSize;
+  final double iconSize;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final accent = accentColor ?? palette.terracotta;
 
     return Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: palette.accentSoft,
-        borderRadius: AppRadius.smAll,
+        color: palette.softTint(accent),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: accent.withValues(alpha: 0.2)),
       ),
-      child: Text(emoji, style: TextStyle(fontSize: fontSize)),
+      child: Icon(
+        Icons.category_outlined,
+        size: iconSize,
+        color: accent,
+      ),
     );
   }
 }

@@ -23,9 +23,11 @@ ThemeData _buildTheme(AppPalette palette, Brightness brightness) {
       ? ColorScheme.light(
           primary: palette.accent,
           onPrimary: palette.onAccent,
-          primaryContainer: palette.accentLight,
+          primaryContainer: palette.accentSoft,
           onPrimaryContainer: palette.accentDark,
-          secondary: palette.accentDark,
+          secondary: palette.accentLight,
+          onSecondary: palette.onAccent,
+          tertiary: palette.accentWarm,
           surface: palette.surface,
           onSurface: palette.textPrimary,
           onSurfaceVariant: palette.textSecondary,
@@ -33,11 +35,14 @@ ThemeData _buildTheme(AppPalette palette, Brightness brightness) {
           outlineVariant: palette.divider,
         )
       : ColorScheme.dark(
-          primary: palette.accent,
+          primary: palette.petrol,
           onPrimary: palette.onAccent,
-          primaryContainer: palette.accentLight,
-          onPrimaryContainer: palette.accent,
-          secondary: palette.accentDark,
+          primaryContainer: palette.accentSoft,
+          onPrimaryContainer: palette.petrol,
+          secondary: palette.blue,
+          onSecondary: palette.onAccent,
+          tertiary: palette.terracotta,
+          onTertiary: palette.onAccent,
           surface: palette.surface,
           onSurface: palette.textPrimary,
           onSurfaceVariant: palette.textSecondary,
@@ -67,7 +72,7 @@ ThemeData _buildTheme(AppPalette palette, Brightness brightness) {
           isLight ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
     ),
     cardTheme: CardTheme(
-      color: palette.surface,
+      color: palette.card,
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -97,11 +102,11 @@ ThemeData _buildTheme(AppPalette palette, Brightness brightness) {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.mdAll,
-        borderSide: BorderSide(color: palette.accent, width: 1.5),
+        borderSide: BorderSide(color: palette.petrol, width: 1.5),
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: palette.accent,
+      backgroundColor: palette.accentWarm,
       foregroundColor: palette.onAccent,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -111,10 +116,10 @@ ThemeData _buildTheme(AppPalette palette, Brightness brightness) {
     navigationBarTheme: NavigationBarThemeData(
       height: 72,
       backgroundColor: palette.surface,
-      indicatorColor: palette.accentLight,
+      indicatorColor: palette.accentSoft,
       surfaceTintColor: Colors.transparent,
       shadowColor: palette.shadow,
-      elevation: 0,
+      elevation: 8,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final selected = states.contains(WidgetState.selected);
@@ -126,7 +131,7 @@ ThemeData _buildTheme(AppPalette palette, Brightness brightness) {
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final selected = states.contains(WidgetState.selected);
         return TextStyle(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           color: selected ? palette.accent : palette.textTertiary,
         );
