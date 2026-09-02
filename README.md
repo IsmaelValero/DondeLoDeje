@@ -15,6 +15,10 @@ flutter pub get
 flutter run -d chrome
 ```
 
+## Política de privacidad
+
+El texto publicado está en `docs/index.md` y se sirve mediante GitHub Pages.
+
 ## Fase actual
 
 Interfaz inicial y navegación con datos de ejemplo. Sin persistencia, login ni backend.
