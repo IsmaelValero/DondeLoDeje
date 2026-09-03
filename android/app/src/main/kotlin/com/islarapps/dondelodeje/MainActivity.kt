@@ -1,4 +1,4 @@
-package com.dondelodeje.dondelodeje
+package com.islarapps.dondelodeje
 
 import io.flutter.embedding.android.FlutterActivity
 
